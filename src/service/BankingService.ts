@@ -6,6 +6,10 @@ import { IAccountsService } from "../interfaces/IAccountsService";
 import { AccountsService } from "./AccountsService";
 import { ITransferService } from "../interfaces/ITransferService";
 import { TransferService } from "./TransferService";
+import { ICsvRowMapper } from "../interfaces/ICsvRowMapper";
+import { AccountCsvRow, TransferCsvRow } from "../types/CsvRows";
+import { AccountCsvRowMapper } from "../mapper/AccountCsvRowMapper";
+import { TransferCsvRowMapper } from "../mapper/TransferCsvRowMapper";
 
 export class BankingService {
   private csvService: ICsvService;
@@ -50,13 +54,13 @@ export class BankingService {
     console.log("✅ Complete!\n");
   }
 
-  private async loadAccountRecords(filePath: string): Promise<string[][]> {
+  private async loadAccountRecords(filePath: string): Promise<AccountCsvRow[]> {
     console.log("📂 Loading accounts...");
-    return await this.csvService.load(filePath, new AccountValidator());
+    return await this.csvService.load(filePath, new AccountValidator(), new AccountCsvRowMapper());
   }
 
-  private async loadTransferRecords(filePath: string): Promise<string[][]> {
+  private async loadTransferRecords(filePath: string): Promise<TransferCsvRow[]> {
     console.log("📂 Loading transfers...");
-    return await this.csvService.load(filePath, new TransferValidator());
+    return await this.csvService.load(filePath, new TransferValidator(), new TransferCsvRowMapper());
   }
 }

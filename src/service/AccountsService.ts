@@ -1,11 +1,12 @@
 import { IAccountsService } from "../interfaces/IAccountsService";
 import { Account } from "../domain/Account";
 import { Result } from "../types/Results";
+import { AccountCsvRow } from "../types/CsvRows";
 
 export class AccountsService implements IAccountsService {
   private accounts: Map<string, Account>;
 
-  constructor(records: string[][]) {
+  constructor(records: AccountCsvRow[]) {
     this.accounts = this.buildAccountMap(records);
   }
 
@@ -51,12 +52,12 @@ export class AccountsService implements IAccountsService {
     return records;
   }
 
-  private buildAccountMap(records: string[][]): Map<string, Account> {
+  private   buildAccountMap(records: AccountCsvRow[]): Map<string, Account> {
     const map = new Map<string, Account>();
 
     records.forEach((record, index) => {
-      const accountNumber = record[0] ?? "";
-      const balance = parseFloat(record[1] ?? "");
+      const accountNumber = record.accountNumber;
+      const balance = record.balance;
 
       if (map.has(accountNumber)) {
         console.warn(

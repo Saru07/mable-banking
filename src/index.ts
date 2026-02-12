@@ -4,8 +4,8 @@ async function main(): Promise<void> {
   const args = process.argv;
   const accountsFile = args[2];
   const transfersFile = args[3];
-  const outputFile = args[4] || 'output/accounts.csv';
-  const logFile = args[5] || 'output/transfer-failures.log';
+  const outputFile = args[4] ?? 'output/accounts.csv';
+  const logFile = args[5] ?? 'output/transfer-failures.log';
 
   if (!accountsFile || !transfersFile) {
     console.error('Usage: npm run dev <accounts.csv> <transfers.csv> [output.csv] [failures.log]');

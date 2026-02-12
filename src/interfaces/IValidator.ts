@@ -1,3 +1,5 @@
+import { Result } from "../types/Results";
+
 export interface IValidator {
-  validate(record: string[], lineNumber: number): void;
+  validate(record: string[]): Result;
 }

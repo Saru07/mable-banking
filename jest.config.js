@@ -15,5 +15,6 @@ module.exports = {
     'src/**/*.ts',
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts'
-  ]
+  ],
+  silent: true
 };

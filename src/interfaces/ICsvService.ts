@@ -1,6 +1,11 @@
-import { IValidator } from "./IValidator";
+import { IValidator } from './IValidator';
+import { ICsvRowMapper } from './ICsvRowMapper';
 
 export interface ICsvService {
-  load(filePath: string, validator: IValidator): Promise<string[][]>;
+  load<T>(
+    filePath: string, 
+    validator: IValidator, 
+    mapper: ICsvRowMapper<T>
+  ): Promise<T[]>;
   write(filePath: string, records: string[][]): Promise<void>;
 }

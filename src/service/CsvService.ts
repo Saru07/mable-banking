@@ -3,22 +3,31 @@ import * as readline from "readline";
 import * as path from "path";
 import { IValidator } from "../interfaces/IValidator";
 import { ICsvService } from "../interfaces/ICsvService";
+import { ICsvRowMapper } from "../interfaces/ICsvRowMapper";
 
 export class CsvService implements ICsvService {
   /**
    * Load and validate CSV file
    * Returns array of validated records (string arrays)
    */
-  async load(filePath: string, validator: IValidator): Promise<string[][]> {
-    const records: string[][] = [];
+  async load<T>(
+    filePath: string,
+    validator: IValidator,
+    mapper: ICsvRowMapper<T>,
+  ): Promise<T[]> {
+    const records: T[] = [];
     const lines = await this.readLines(filePath);
 
     lines.forEach((line, index) => {
       const lineNumber = index + 1;
       const record = line.split(",").map((field) => field.trim());
+      const result = validator.validate(record);
 
-      validator.validate(record, lineNumber);
-      records.push(record);
+      if (result.state === "failure") {
+        throw new Error(`Line ${lineNumber}: ${result.errorMessage}`);
+      }
+      const typedRow = mapper.map(record);
+      records.push(typedRow);
     });
 
     console.log(`✅ Loaded ${records.length} records from ${filePath}`);
@@ -29,6 +38,9 @@ export class CsvService implements ICsvService {
    * Write records to CSV file
    */
   async write(filePath: string, records: string[][]): Promise<void> {
+    if (records.length === 0) {
+      return; 
+    }
     const lines = records.map((record) => record.join(","));
 
     const dir = path.dirname(filePath);

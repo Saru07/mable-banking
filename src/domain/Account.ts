@@ -10,28 +10,33 @@ export class Account {
   }
 
   debit(amount: number): Result {
+    if (amount <= 0) {
+      return {
+        state: "failure",
+        errorMessage: "Debit amount must be positive",
+      };
+    }
+    
     if (this.balance < amount) {
       return {
-        state: 'failure',
-        errorMessage: `Insufficient funds: balance ${this.balance}, required ${amount}`
+        state: "failure",
+        errorMessage: `Insufficient funds: balance ${this.balance}, required ${amount}`,
       };
     }
 
     this.balance -= amount;
-    return { state: 'success' };
+    return { state: "success" };
   }
 
   credit(amount: number): Result {
-    if (amount < 0) {
+    if (amount <= 0) {
       return {
-        state: 'failure',
-        errorMessage: 'Cannot add zero or negative amount'
+        state: "failure",
+        errorMessage: "Credit amount must be positive",
       };
     }
 
     this.balance += amount;
-    return { state: 'success' };
+    return { state: "success" };
   }
-
-
 }
