@@ -19,12 +19,28 @@ npm run build
 ## Usage
 
 ```bash
-npm run dev <accounts-file> <transfers-file>
+npm run dev <accounts-file> <transfers-file> [output-file] [failures-log]
 ```
+### Default output files:
+- output/mable-balances.csv
+- output/transfer-failures.log
 
-## Example
+### Example
 ```bash
 npm run dev data/mable-accounts.csv data/mable-transfers.csv
+```
+
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+
+# Run specific test file
+npm test Account.test.ts
 ```
 
 ## Input Format
@@ -43,9 +59,17 @@ sourceAccount,destinationAccount,amount
 ```
 
 ## Output
+
 ### Console
 ```bash
-✅ Success: 3 | ❌ Failed: 2
+📂 Loading accounts...
+✅ Loaded 5 records from data/mable-accounts.csv
+📂 Loading transfers...
+✅ Loaded 6 records from data/mable-transfers.csv
+
+🔄 Processing transfers...
+✅ Success: 3 | ❌ Failed: 3
+✅ Complete!
 ```
 
 ### Files
@@ -149,9 +173,9 @@ sourceAccount,destinationAccount,amount
 - Default: `output/accounts.csv`
 
 ### Failure Log
+- CSV format: `fromAccountNumber,toAccountNumber,amount,errorMessage`
 - Created only if failures exist
-- Format: `Transfer N: from -> to, Amount: X | Error: message`
-- Default: `transfer-failures.log`
+- Default: `output/transfer-failures.log`
 
 ### Console
 - Summary: success/failure counts
