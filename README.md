@@ -1,4 +1,57 @@
-# Mable Banking System
+# Mable Banking Service
+
+A TypeScript-based payment processing system that handles account transfers with validation, error handling, and failure logging.
+
+## Features
+
+- ✅ Process bulk transfers from CSV files
+- ✅ Account balance validation
+- ✅ Comprehensive error handling
+- ✅ Failed transaction logging
+- ✅ Updated account balances output
+
+## Setup
+
+```bash
+npm install
+npm run build
+```
+## Usage
+
+```bash
+npm run dev <accounts-file> <transfers-file>
+```
+
+## Example
+```bash
+npm run dev data/mable-accounts.csv data/mable-transfers.csv
+```
+
+## Input Format
+### Accounts CSV
+```
+accountNumber,balance
+1111234522226789,5000.00
+1212343433335665,1200.00
+```
+
+### Transfers CSV
+```
+sourceAccount,destinationAccount,amount
+1111234522226789,1212343433335665,500.00
+3212343433335755,1111234522226789,320.50
+```
+
+## Output
+### Console
+```bash
+✅ Success: 3 | ❌ Failed: 2
+```
+
+### Files
+- output/account.csv - Updated account balances
+- output/transfer-failures.log - Failed transactions with error details
+
 
 # System Assumptions
 
@@ -56,6 +109,9 @@
 - **Non-fatal errors** (logged, processing continues):
   - Invalid transfer (insufficient funds, account not found, etc.)
   - Duplicate accounts (skip duplicates)
+
+- Duplicate account numbers in the input file are skipped (first occurrence is used)
+- Failed transfers are logged to `output/transfer-failures.log`
 
 ### Transaction Model
 - No rollback

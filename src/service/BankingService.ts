@@ -6,16 +6,18 @@ import { IAccountsService } from "../interfaces/IAccountsService";
 import { AccountsService } from "./AccountsService";
 import { ITransferService } from "../interfaces/ITransferService";
 import { TransferService } from "./TransferService";
-import { ICsvRowMapper } from "../interfaces/ICsvRowMapper";
 import { AccountCsvRow, TransferCsvRow } from "../types/CsvRows";
 import { AccountCsvRowMapper } from "../mapper/AccountCsvRowMapper";
 import { TransferCsvRowMapper } from "../mapper/TransferCsvRowMapper";
+import { ReportingService } from "./ReportingService";
 
 export class BankingService {
   private csvService: ICsvService;
+  private reportingService: ReportingService;
 
   constructor() {
     this.csvService = new CsvService();
+    this.reportingService = new ReportingService(this.csvService);
   }
 
   async run(
@@ -43,24 +45,38 @@ export class BankingService {
     const successCount = transferService.getSuccessCount();
     const failureCount = transferService.getFailureCount();
 
-    console.log(`✅ Success: ${successCount} | ❌ Failed: ${failureCount}`);
+    this.reportingService.displaySummary(successCount, failureCount);
 
-    await this.csvService.write(outputFile, accountsService.exportAccounts());
-    
-    if (failureCount > 0) {
-      await this.csvService.write(logFile, transferService.exportFailureLogs());
-    }
+    await this.reportingService.writeAccountBalances(
+      outputFile,
+      accountsService.exportAccounts(),
+    );
 
-    console.log("✅ Complete!\n");
+    await this.reportingService.writeFailureLogs(
+      logFile,
+      transferService.exportFailureLogs(),
+    );
+
+    this.reportingService.displayComplete();
   }
 
   private async loadAccountRecords(filePath: string): Promise<AccountCsvRow[]> {
     console.log("📂 Loading accounts...");
-    return await this.csvService.load(filePath, new AccountValidator(), new AccountCsvRowMapper());
+    return await this.csvService.load(
+      filePath,
+      new AccountValidator(),
+      new AccountCsvRowMapper(),
+    );
   }
 
-  private async loadTransferRecords(filePath: string): Promise<TransferCsvRow[]> {
+  private async loadTransferRecords(
+    filePath: string,
+  ): Promise<TransferCsvRow[]> {
     console.log("📂 Loading transfers...");
-    return await this.csvService.load(filePath, new TransferValidator(), new TransferCsvRowMapper());
+    return await this.csvService.load(
+      filePath,
+      new TransferValidator(),
+      new TransferCsvRowMapper(),
+    );
   }
 }

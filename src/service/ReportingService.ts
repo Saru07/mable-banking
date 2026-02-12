@@ -1,30 +1,29 @@
-import { TransferResult } from "../domain/TransferResult";
-import * as fs from "fs";
+import { ICsvService } from "../interfaces/ICsvService";
 
 export class ReportingService {
-  displaySummary(results: TransferResult[]): void {
-    const successCount = results.filter((r) => r.state === "success").length;
-    const failureCount = results.filter((r) => r.state === "failure").length;
+  constructor(private csvService: ICsvService) {}
 
-    console.log("");
-    console.log("=== Transfer Summary ===");
-    console.log(`✅ Successful: ${successCount}`);
-    console.log(`❌ Failed: ${failureCount}`);
+  displaySummary(successCount: number, failureCount: number): void {
+    console.log(`✅ Success: ${successCount} | ❌ Failed: ${failureCount}`);
   }
 
-  logFailuresToFile(results: TransferResult[], filePath: string): void {
-    const failures = results.filter((r) => r.state === "failure");
+  displayComplete(): void {
+    console.log("✅ Complete!\n");
+  }
 
-    if (failures.length === 0) {
-      return;
+  async writeAccountBalances(
+    filePath: string, 
+    accountData: string[][]
+  ): Promise<void> {
+    await this.csvService.write(filePath, accountData);
+  }
+
+  async writeFailureLogs(
+    filePath: string, 
+    failureData: string[][]
+  ): Promise<void> {
+    if (failureData.length > 0) {
+      await this.csvService.write(filePath, failureData);
     }
-
-    const logLines = failures.map((result, index) => {
-      const { transfer, errorMessage } = result;
-      return `Transfer ${index + 1}: ${transfer.fromAccount} -> ${transfer.toAccount}, Amount: ${transfer.amount} | Error: ${errorMessage}`;
-    });
-
-    fs.writeFileSync(filePath, logLines.join("\n"), "utf-8");
-    console.log(`📄 Failures logged to: ${filePath}`);
   }
 }
