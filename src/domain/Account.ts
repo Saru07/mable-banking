@@ -1,8 +1,8 @@
 import { Result } from "../types/Results";
 
 export class Account {
-  readonly accountNumber: string;
-  balance: number;
+  readonly accountNumber: string; // custom types
+  balance: number; // handle in lowest denomination
 
   constructor(accountNumber: string, balance: number) {
     this.accountNumber = accountNumber;
